@@ -71,7 +71,7 @@ def IS_CONSISTENT(csp, var, value, assignment):
 
     return True
 
-
+# ---- INFERENCE: forward checking based on adjacency ----
 def INFERENCE(csp, var, assignment):
     idx = csp.variables.index(var)
     if idx + 1 >= len(csp.variables):
@@ -95,9 +95,8 @@ def INFERENCE(csp, var, assignment):
 def BACKTRACKING_SEARCH(csp):
     return BACKTRACK(csp, {})
 
-
+# --- Backtrack function ---
 def BACKTRACK(csp, assignment):
-    # use proper completeness condition
     if ASSIGNMENT_COMPLETE(csp, assignment):
         return assignment
 
@@ -127,7 +126,6 @@ def BACKTRACK(csp, assignment):
     return None
 
 
-
 # ---- Compute path cost and total parks ----
 def compute_path_info(path):
     total_cost = 0
@@ -138,10 +136,10 @@ def compute_path_info(path):
             total_cost += distances[path[i-1]][state]
     return total_cost, total_parks
 
+# ---- Check if assignment is complete ----
 def ASSIGNMENT_COMPLETE(csp, assignment):
     if len(assignment) != len(csp.variables):
         return False
-    # all variables assigned; now check parks
     total_parks = 0
     for var in csp.variables:
         state = assignment[var]
@@ -162,11 +160,9 @@ print(f"Minimum number of parks: {NO_OF_PARKS}\n")
 
 states, zones, parks, distances = load_data()
 
-# --- Determine path variables from initial zone to Z12 ---
 initial_zone = zones[INITIAL]
 variables = [f"Z{z}" for z in range(initial_zone, 13)]
 
-# --- Define domains for each zone variable ---
 domains = {}
 zone_states = {}
 for state, z in zones.items():
@@ -186,7 +182,6 @@ csp = CSP(variables, domains, neighbors, None)
 solution = BACKTRACKING_SEARCH(csp)
 
 if solution:
-    # Order solution by zones
     path = [solution[var] for var in variables]
     path_cost, total_parks = compute_path_info(path)
 
