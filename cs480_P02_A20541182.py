@@ -72,7 +72,6 @@ def IS_CONSISTENT(csp, var, value, assignment):
     return True
 
 
-# ---- INFERENCE: forward checking ----
 def INFERENCE(csp, var, assignment):
     idx = csp.variables.index(var)
     if idx + 1 >= len(csp.variables):
@@ -82,34 +81,36 @@ def INFERENCE(csp, var, assignment):
         return {}
 
     current_state = assignment[var]
-    # prune domain of next_var to only values reachable from current_state
-    pruned_values = [val for val in csp.domains[next_var] if distances[current_state].get(val, -1) != -1]
+    possible_values = []
+    for val in csp.domains[next_var]:
+        if distances[current_state].get(val, -1) != -1:
+            possible_values.append(val)
 
-    if not pruned_values:
+    if not possible_values:
         return "failure"
-    return {next_var: pruned_values}  # only for domain pruning
+    return {next_var: possible_values} 
+
 
 # --- Backtracking Algorithm ---
 def BACKTRACKING_SEARCH(csp):
     return BACKTRACK(csp, {})
 
 
-# ---- Backtrack Function ----
 def BACKTRACK(csp, assignment):
-    if len(assignment) == len(csp.variables):
+    # use proper completeness condition
+    if ASSIGNMENT_COMPLETE(csp, assignment):
         return assignment
 
     var = SELECT_UNASSIGNED_VARIABLE(csp, assignment)
+    if var is None:
+        return None
 
     for value in ORDER_DOMAIN_VALUES(csp, var):
         if IS_CONSISTENT(csp, var, value, assignment):
             assignment[var] = value
-
-            # Forward checking / inference
             inferences = INFERENCE(csp, var, assignment)
 
             if inferences != "failure":
-                # Save domains to restore later
                 saved_domains = {inf_var: list(csp.domains[inf_var]) for inf_var in inferences}
                 for inf_var, vals in inferences.items():
                     csp.domains[inf_var] = vals
@@ -118,14 +119,13 @@ def BACKTRACK(csp, assignment):
                 if result is not None:
                     return result
 
-                # Restore domains after backtracking
                 for inf_var in inferences:
                     csp.domains[inf_var] = saved_domains[inf_var]
 
-            # Remove current assignment before trying next value
             del assignment[var]
 
     return None
+
 
 
 # ---- Compute path cost and total parks ----
@@ -137,6 +137,17 @@ def compute_path_info(path):
         if i > 0:
             total_cost += distances[path[i-1]][state]
     return total_cost, total_parks
+
+def ASSIGNMENT_COMPLETE(csp, assignment):
+    if len(assignment) != len(csp.variables):
+        return False
+    # all variables assigned; now check parks
+    total_parks = 0
+    for var in csp.variables:
+        state = assignment[var]
+        total_parks += parks[state]
+    return total_parks >= NO_OF_PARKS
+
 
 # ---- Main Program ----
 if len(sys.argv) != 3:
@@ -161,11 +172,14 @@ zone_states = {}
 for state, z in zones.items():
     if z >= initial_zone:
         zone_states.setdefault(z, []).append(state)
+
 for i, var in enumerate(variables):
     zone_num = initial_zone + i
     domains[var] = zone_states.get(zone_num, [])
 
-# --- Neighbors (unused but required for CSP) ---
+domains[variables[0]] = [INITIAL]
+
+
 neighbors = {var: [] for var in variables}
 
 csp = CSP(variables, domains, neighbors, None)
