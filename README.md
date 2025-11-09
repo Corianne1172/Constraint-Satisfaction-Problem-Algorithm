@@ -1,9 +1,4 @@
 # Constraint Satisfaction Problem: US Road Trip Planner
-**Course:** CS 480 – Artificial Intelligence  
-**Author:** Otioh Marie-Lynn Corianne Delon Konan  
-**Assignment:** Programming Assignment #02  
-
----
 
 ## 🧩 Overview  
 This project implements a **Constraint Satisfaction Problem (CSP)** solver using the **Backtracking Search Algorithm** to plan an optimal road trip across the contiguous United States.  
