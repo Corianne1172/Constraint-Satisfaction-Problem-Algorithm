@@ -1,4 +1,5 @@
 import csv
+import sys
 # --- Load data from CSV files ---
 def load_data():
     # --- Read zones ---
@@ -31,5 +32,20 @@ def load_data():
             }
 
     return states_list, zone_of, parks, adj_matrix
-#Load the data
+
 states, zones, parks, distances = load_data()
+
+#Check command line arguments
+if len(sys.argv) != 3:
+    print("ERROR: Not enough or too many input arguments")
+    sys.exit()
+    
+#Getting the different arguments
+INTIAL, NO_OF_PARKS = sys.argv[1].upper(), sys.argv[2]
+
+print("Konan, Otioh Marie-Lynn Corianne Delon, A20541182 solution:")
+print(f"Initial state: {INTIAL}")
+print(f"Minimum number of parks: {NO_OF_PARKS}\n")
+
+#Load the data
+
