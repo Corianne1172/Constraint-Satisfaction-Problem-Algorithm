@@ -13,7 +13,7 @@ The algorithm searches for a valid path starting from a given state and ending i
 ---
 
 ## ⚙️ Features  
-- Implements **backtracking CSP** following textbook pseudocode exactly.  
+- Implements **backtracking CSP** following pseudocode exactly.  
 - Uses helper functions:  
   - `SELECT_UNASSIGNED_VARIABLE`  
   - `ORDER_DOMAIN_VALUES`  
@@ -116,14 +116,6 @@ Number of national parks visited: 0
 
 ---
 
-## 🗺️ Data Visualization  
-The graph below (from the assignment handout) shows the 48 contiguous states grouped by zones (Z1–Z12), illustrating the westward travel constraint.
-
-![US Zones Graph](Picture1.png)
-
----
-
 ## 🧑‍💻 Author  
 **Otioh Marie-Lynn Corianne Delon Konan**  
 CS 480 – Illinois Institute of Technology  
-Fall 2025  
