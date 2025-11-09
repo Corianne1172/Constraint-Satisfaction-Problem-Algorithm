@@ -72,6 +72,7 @@ def IS_CONSISTENT(csp, var, value, assignment):
     return True
 
 
+# ---- INFERENCE: forward checking ----
 def INFERENCE(csp, var, assignment):
     idx = csp.variables.index(var)
     if idx + 1 >= len(csp.variables):
@@ -81,14 +82,12 @@ def INFERENCE(csp, var, assignment):
         return {}
 
     current_state = assignment[var]
-    possible_values = []
-    for val in csp.domains[next_var]:
-        if distances[current_state].get(val, -1) != -1:
-            possible_values.append(val)
+    # prune domain of next_var to only values reachable from current_state
+    pruned_values = [val for val in csp.domains[next_var] if distances[current_state].get(val, -1) != -1]
 
-    if not possible_values:
+    if not pruned_values:
         return "failure"
-    return {next_var: possible_values}
+    return {next_var: pruned_values}  # only for domain pruning
 
 # --- Backtracking Algorithm ---
 def BACKTRACKING_SEARCH(csp):
@@ -105,26 +104,29 @@ def BACKTRACK(csp, assignment):
     for value in ORDER_DOMAIN_VALUES(csp, var):
         if IS_CONSISTENT(csp, var, value, assignment):
             assignment[var] = value
+
+            # Forward checking / inference
             inferences = INFERENCE(csp, var, assignment)
 
             if inferences != "failure":
-                saved_domains = {}
+                # Save domains to restore later
+                saved_domains = {inf_var: list(csp.domains[inf_var]) for inf_var in inferences}
                 for inf_var, vals in inferences.items():
-                    saved_domains[inf_var] = csp.domains[inf_var]
                     csp.domains[inf_var] = vals
-                assignment.update(inferences)
 
                 result = BACKTRACK(csp, assignment)
                 if result is not None:
                     return result
 
+                # Restore domains after backtracking
                 for inf_var in inferences:
-                    del assignment[inf_var]
                     csp.domains[inf_var] = saved_domains[inf_var]
 
+            # Remove current assignment before trying next value
             del assignment[var]
 
     return None
+
 
 # ---- Compute path cost and total parks ----
 def compute_path_info(path):
