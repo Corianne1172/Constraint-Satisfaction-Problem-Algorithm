@@ -32,9 +32,19 @@ def load_data():
             }
 
     return states_list, zone_of, parks, adj_matrix
+# --- CSP Class Definition ---
+class CSP:
+    def __init__(self, variables, domains, neighbors, constraints):
+        self.variables = variables
+        self.domains = domains
+        self.neighbors = neighbors
+        self.constraints = constraints 
+        
+#--- Backtracking Algorithm ---
+def BACKTRACKING_SEARCH():
+    pass
 
-states, zones, parks, distances = load_data()
-
+# ---- Main Program for actual game ----
 #Check command line arguments
 if len(sys.argv) != 3:
     print("ERROR: Not enough or too many input arguments")
@@ -48,4 +58,4 @@ print(f"Initial state: {INTIAL}")
 print(f"Minimum number of parks: {NO_OF_PARKS}\n")
 
 #Load the data
-
+states, zones, parks, distances = load_data()
